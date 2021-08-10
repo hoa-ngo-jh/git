@@ -1,0 +1,29 @@
+** Merge:
+ - Merge will combine multiple sequences of commits into one unified history. In the most use cases, git merge is used to combine two branches. Merging takes the contents of a source branch and integrates them with a target branch. In this process, only the target branch is changed. The source branch history remains the same.
+
+ Pros:
+  - Clearly history
+  - Maintains the context of the branch
+  - When people review the commit, it's easy to see when the commits are created and what have been changed.
+
+ Cons:
+  - If we have a lot of merge commits, it is pretty confusing to review
+  - Commit history can become polluted by these merge commits.
+
+ When use Merge? 
+  - Using merge if we want to merge branch
+  - If we are working on feature branch, and we want to combine code in this branch into main branch, and also want to keep its commits separate. We should use merge.
+
+** Rebase:
+ - Rebase is the process of moving or combining a sequence of commits to a new base commit. Unlike merging, rebasing transfers the completed work from one branch to another. 
+
+ Pros:
+  - Manipulating a single commit is easy.
+  - Avoid redundant merge commits.
+
+ Cons:
+  - Due to Rebasing changing the base of branch to another branch, it make difficult for others to work in the same branch.
+  - Rebasing public repositories can be dangerous when working as a team
+
+ When use Rebase?
+  - If we want update the base of the feature branch, we should use rebase and use it on local.

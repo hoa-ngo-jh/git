@@ -1,12 +1,39 @@
 We have 2 big branch call master (to hold test features for test site) & production.
 
 - When we are creating new feature, what branch should we based on and why?
-  Due to the production branch contains the fully developed stable code, we should code on this branch.
+  + Due to the production branch contains the fully developed stable code, we should checkout from this branch.
+  + If we are creating new Feature E that need code of Feature A, we should checkout from Feature A.
+  + If we are creating new Feature E that need code of Feature A and Feature B, we should checkout from Feature A then 'cherry-pick' Feature B or vice versa.
 
 - If we have a feature branch that haven't been merged to production and that branch have bug, what course of action are you going to do with Git to before resolving the bug?
- We need to switch to that 'feature branch' first, then resolve the bug.
- git checkout <feature branch>
+  We need to switch to that 'feature branch' first, then resolve the bug.
+  git checkout <feature branch>
 
 - If someone accidentally merge a feature (feature/delete-user) onto production and have a list of commitId ended with (0492978, fc9348c, k101100), then another commit (a1fsas8) is added on top of the production branch. How do we remove that merged feature?
- git log: searching for merged commitId.
- git revert <commitId> -m 1
+  Solution 1:
+   git log: searching for merged commitId.
+   git revert <commitId> -m 1
+
+   * In case we want to re-do merge after add some commits (fix or update feature), we will see the problem: none of the old commits (0492978, fc9348c, k101100) will be in the production branch. Because reverting a merge commit invert the commit changed, but it does nothing to the effects on history that the merge had. So the merge will still exist.
+   So we should revert the previous revert:
+   git revert <revert commitId>
+
+   This will make history equivalent to not having revert commits in history.
+   Then we will merge the feature branch again. This merging will not have conflict arising from an earlier revert and revert of the revert.
+  
+  Solution 2: Using git reset
+    git log --oneline: searching for commitId before merging.
+    git checkout <commitId before merging>
+    git checkout -b temp: create a new branch to hold commit (a1fsas8)
+    git cherry-pick a1fsas8
+    git checkout production
+    git reset --hard <commitId before merging>: Reset to commit before merge
+    git merge temp
+    git branch -d temp
+
+    This solution will keep the log clean as nothing merging happened. But it make difficult for colleagues to work on this branch, not knowing what commits have been. 
+
+- if someone accidentally rebase...
+  git reflog <feature_branch>
+  git checkout <feature_branch>
+  git reset --hard <id right_before_rebase_finished>
