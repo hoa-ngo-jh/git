@@ -1,0 +1,21 @@
+Câu 1: Cho 1 nhánh production có commit A, B, C, D
+  Khi check out feature/A từ production thì commit trong feature A vẫn là A, B, C, D hay nó đã bị copy thành A' B' C' D'
+  Vẫn là A, B, C, D bởi vì checkout từ production chỉ thay đổi state của working tree hiện tại, chứ thực tế là không có gì thay đổi trong repository. 
+
+Câu 2: Liên quan tới câu hỏi số 3, trường hợp bị tại nạn rebase. Sau khi reset xong về điểm trước khi rebase. Thì cái commit a1fsas8 tại sao không add vô?
+ Vì git reset --hard sẽ thay đổi branch hiện tại của ta về điểm trước khi rebase, và xoá các commit diễn ra sau điểm này, đồng nghĩa với việc commit a1fsas8 không còn trong history nữa.
+
+ Khắc phục:
+ git checkout <id before rebase>
+ git checkout -b temp
+ git cherry-pick a1fsas8
+ git checkout production
+ git reset --hard <id before rebase>
+ git merge temp
+ git branch -d temp
+
+Câu 3: Cho nhánh production có commit A, B. Nếu mình có nhánh feature A có thêm commit C đưa lên file foo.js, D đưa lên file bar.js Nhưng vì tại nạn feature A bị merge vô nhánh production, xong có commit E vô nhánh production trong changes của nó lại dính file foo.js và bar.js (chỉ chỉnh lại format, không code gì thêm). Vậy thì mình sẽ bỏ commit C và D như thế nào cho hợp lý?
+ git log --oneline
+ git rebase -i <id before merge>
+ Drop commit C và D đi, giữ lại commit E, sau đó save lại. Tiếp theo Git sẽ báo conflict, giải quyết conflict xong
+ git rebase --continue
